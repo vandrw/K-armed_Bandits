@@ -8,4 +8,4 @@ bin/*
 !bin/.gitkeep
 
 # Ignore Visual Code files
-.vscode
+.vscode/
