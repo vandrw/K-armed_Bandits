@@ -8,7 +8,7 @@ Bandit::Bandit() {
 }
 
 Bandit::Bandit(int inpStrat) {
-        setStrategy(inpStrat);
+    setStrategy(inpStrat);
 }
 
 void Bandit::printMax() {

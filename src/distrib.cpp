@@ -6,21 +6,23 @@ using namespace std;
 /* The Gaussian(Normal) distribution will return a
  * float number based on a distribution with a mean
  * 0 and standard deviation 1. */
-float createGaussian() {
+void createGaussian(int K, float arms[]) {
     random_device generator;
     normal_distribution<double> normal(0,1);
 
-    //continue
-    float num = normal(generator);
+    for (int i=0; i<K; i++) {
+        arms[i] = normal(generator);
+    }
 
-    cout << "\nRandom num Gaus: " << num << "\n";
-    
-    return 1;
+    for (int i=0; i<K; i++) {
+        cout << arms[i] << " ";
+    }
+    cout << "\n";
 }
 
 /* The Bernoulli distribution will return an integer
  * (either 0 or 1). [CONTINUE]*/
-int createBernoulli() {
+void createBernoulli(int K, float arms[]) {
     random_device generator;
     uniform_real_distribution<float> realDist(0.0, 1.0);
 
@@ -31,9 +33,7 @@ int createBernoulli() {
 
     bernoulli_distribution bernoulli(p_a);
 
-    cout << "Random num Bernoulli: " << bernoulli(generator) << "\n";
-
-    return 1;
-
-    //continue
+    for (int i=0; i<K; i++) {
+        arms[i] = bernoulli(generator);
+    }
 }

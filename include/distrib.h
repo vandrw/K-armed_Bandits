@@ -1,8 +1,8 @@
 #ifndef DISTRIB_H
 #define DISTRIB_H
 
-float createGaussian();
+void createGaussian(int K, float arms[]);
 
-int createBernoulli();
+void createBernoulli(int K, float arms[]);
 
 #endif
