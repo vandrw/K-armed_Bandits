@@ -1,9 +1,10 @@
 ## How to Run
 To run the code, go to a terminal, set the present working directory as K-armed_Bandits and run the following commands:
 
-`make`
-
-`make run`
+```
+make
+make run
+```
 
 ## Project Structure
 * bin: The output executables will appear here.
@@ -19,10 +20,10 @@ To run the code, go to a terminal, set the present working directory as K-armed_
 * src: The application and only the application’s source files.
 
 ## TO DO
-* Implement user interaction
-* Implement Gaussian (normal) and Bernoulli distribution
-* Implement Exporation/ Exploitation using:
-    * Epsilon-Greedy
-    * Optimistic initial values
-    * Reinforcement comparison
-    * Boltzmann exploration 
+- [x] Implement user interaction
+- [ ] Implement Gaussian (normal) and Bernoulli distribution
+- [ ] Implement Exporation/ Exploitation using:
+    - [ ] Epsilon-Greedy
+    - [ ] Optimistic initial values
+    - [ ] Reinforcement comparison
+    - [ ] Boltzmann exploration 
