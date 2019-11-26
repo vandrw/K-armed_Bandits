@@ -24,8 +24,3 @@ clean:
 run:
 	@echo "Running the file...\n";
 	@$(TARGET)/$(OUTPUT)
-
-debug:
-	@echo "You are now in debugging mode.";
-	@echo "All variables are set to their default values.\n";
-	@$(TARGET)/$(OUTPUT) --debug

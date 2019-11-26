@@ -13,11 +13,6 @@ void createGaussian(int K, float arms[]) {
     for (int i=0; i<K; i++) {
         arms[i] = normal(generator);
     }
-
-    for (int i=0; i<K; i++) {
-        cout << arms[i] << " ";
-    }
-    cout << "\n";
 }
 
 /* The Bernoulli distribution will return an integer

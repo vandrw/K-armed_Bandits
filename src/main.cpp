@@ -1,7 +1,6 @@
 /* K-Armed Bandits */
 
 #include <iostream>
-#include <cstring>
 #include "bandit.h"
 #include "user.h"
 #include "distrib.h"
@@ -12,12 +11,13 @@ int main(int argc, char **argv) {
     Bandit bandit;      // A class that represents the bandit.
     Parameters Param;   // A structure that contains the parameters of the program.
     float epsilon;      // Epsilon value for the Epsilon-Greedy Algorithm.
+    int debug = 1;
 
-    if (strcmp(argv[1], "--debug") != 0) {
+    if (debug != 1) {
         initParams(&Param, &epsilon);
         printParams(Param, epsilon);
     } else {
-        Param.distrib = 2;
+        Param.distrib = 1;
         Param.algorithm = 1;
         Param.K_arms = 40;
         epsilon = 0.01;
@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
         createBernoulli(Param.K_arms, arms);
     }
 
-    if (strcmp(argv[1], "--debug") == 0) {
+    if (debug == 1)  {
         cout << "\nReward values found in the arms:\n";
         for (int i=0; i<Param.K_arms; i++) {
             cout << arms[i] << " ";
