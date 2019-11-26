@@ -1,9 +1,11 @@
 # Ignore the build and lib dirs
-build
+build/*
+!build/.gitkeep
 lib/*
 
 # Ignore any executables
 bin/*
+!bin/.gitkeep
 
 # Ignore Visual Code files
 .vscode
