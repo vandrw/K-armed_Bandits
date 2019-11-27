@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     } else {
         Param.distrib = 1;
         Param.algorithm = 1;
-        Param.K_arms = 40;
+        Param.K_arms = 10;
         epsilon = 0.01;
     }
 

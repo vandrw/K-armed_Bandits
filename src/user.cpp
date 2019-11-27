@@ -42,7 +42,7 @@ void initParams(Parameters *param, float *epsilon) {
     cout << "1. Epsilon-Greedy\n";
     cout << "2. Optimistic initial values\n";
     cout << "3. Reinforcement comparison\n";
-    cout << "4. Boltzmann exploration\n> ";
+    cout << "4. Pursuit methods\n> ";
     if (std::cin.peek() == '\n') {
         param->algorithm = 1;
         cin.clear();
@@ -100,7 +100,7 @@ void printParams(Parameters param, float epsilon) {
              cout << "Reinforcement comparison\n";
              break;
         case 4:
-            cout << "Boltzmann exploration\n";
+            cout << "Pursuit methods\n";
             break;
     }
 
