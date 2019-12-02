@@ -1,12 +1,22 @@
 #include <random>
 #include <iostream>
+#include "user.h"
+#include "distrib.h"
 
 using namespace std;
 
+void initializeArms(int K, int dist, double arms[]) {
+    if (dist == 1) {
+        createGaussian(K, arms);
+    } else {
+        createBernoulli(K, arms);
+    }
+}
+
 /* The Gaussian(Normal) distribution will return a
- * float number based on a distribution with a mean
+ * double number based on a distribution with a mean
  * 0 and standard deviation 1. */
-void createGaussian(int K, float arms[]) {
+void createGaussian(int K, double arms[]) {
     random_device generator;
     normal_distribution<double> normal(0,1);
 
@@ -17,12 +27,12 @@ void createGaussian(int K, float arms[]) {
 
 /* The Bernoulli distribution will return an integer
  * (either 0 or 1). [CONTINUE]*/
-void createBernoulli(int K, float arms[]) {
+void createBernoulli(int K, double arms[]) {
     random_device generator;
-    uniform_real_distribution<float> realDist(0.0, 1.0);
+    uniform_real_distribution<double> realDist(0.0, 1.0);
 
     // Initializing a random p_a.
-    float p_a = realDist(generator);
+    double p_a = realDist(generator);
 
     cout << "p_a = " << p_a << "\n";
 

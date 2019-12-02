@@ -9,13 +9,11 @@ struct Parameters {
     int distrib;      // Distribution choice.
     int algorithm;    // Algorithm choice.
     int K_arms;      // Number of arms.
-    int T = 10000;      // Number of action selections.
-    int N = 1000;       // Number of runs.
 };
 
-void initParams(Parameters *param, float *epsilon);
+void initParams(Parameters *param, double *epsilon);
 
-void printParams(Parameters param, float epsilon);
+void printParams(Parameters param, double epsilon);
 
 void printResults();
 

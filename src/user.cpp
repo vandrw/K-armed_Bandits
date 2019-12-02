@@ -3,7 +3,7 @@
 
 using namespace std;
 
-void initParams(Parameters *param, float *epsilon) {
+void initParams(Parameters *param, double *epsilon) {
 
     for (int i=0; i<=22; i++) {cout << "#";}
 
@@ -77,7 +77,7 @@ void initParams(Parameters *param, float *epsilon) {
     }
 }
 
-void printParams(Parameters param, float epsilon) {
+void printParams(Parameters param, double epsilon) {
     cout << "\n   The parameters you have chosen are:\n";
     cout << "Distribution:\t";
     switch (param.distrib) {
@@ -108,10 +108,6 @@ void printParams(Parameters param, float epsilon) {
     if (param.algorithm == 1) {
         cout << "Epsilon =\t" << epsilon << "\n";
     }
-
-    cout << "\n  Parameters for this simulation:\n";
-    cout << "T =\t" << param.T << "\t| Number of action selections.\n";
-    cout << "N =\t" << param.N << "\t| Number of runs.\n";
 }
 
 void printResults() {
