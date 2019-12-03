@@ -16,24 +16,18 @@ Bandit::Bandit(int alg, int distrib, int K_arms, double eps) {
 
     // Initializing the frequency array with zeros.
     armChoice = new double[K]();
-
-    totalRewards = new double[T*N + 1]();
-    optimalChoice = new int[T*N + 1]();
 }
 
 void Bandit::makeExperiment(double arms[]) {
+    double realMaxReward;
+
     for (int i=0; i<N; i++) {
         observedRewards = new double[K]();
-        realMaxIndex = initializeArms(K, arms);
+        realMaxReward = initializeArms(K, arms);
         makeRun(arms);
     }
 
     printStats(arms);
-
-    delete[] observedRewards;
-    delete[] armChoice;
-    delete[] totalRewards;
-    delete[] optimalChoice;
 }
 
 void Bandit::makeRun(double arms[]) {
@@ -69,20 +63,6 @@ double Bandit::makeStep(double arms[]) {
     }
 
     armChoice[rewardIndex]++;
-
-    if (rewardIndex == realMaxIndex) {
-        optimalChoice[counter] = 1;
-    } else {
-        optimalChoice[counter] = 0;
-    }
-
-    if (counter != 0) {
-        totalRewards[counter] = totalRewards[counter-1] + reward;
-    } else {
-        totalRewards[counter] = reward;
-    }
-
-    counter++;
     
     if (observedRewards[rewardIndex] == 0) {
         observedRewards[rewardIndex] = reward;
@@ -148,7 +128,7 @@ void Bandit::printStats(double arms[]) {
     cout << "The choices were made as follows:\n\n";
 
     cout << "Index" << "\tNum. Choices" << "\t\tObserved" << "\tReal\n";
-    for (int i=0; i<K-1;i++) {
+    for (int i=0; i<K;i++) {
         cout << " " << i << "\t" << armChoice[i] << "\t\t" << observedRewards[i] << "\t" << arms[i] << "\n";
     }
 }
