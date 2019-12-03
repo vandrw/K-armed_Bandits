@@ -1,12 +1,14 @@
 #include <random>
 #include <iostream>
 #include "bandit.h"
+#include "distrib.h"
 
 using namespace std;
 
-Bandit::Bandit(int alg, int K_arms, double eps) {
+Bandit::Bandit(int alg, int distrib, int K_arms, double eps) {
     algorithm = alg;
     K = K_arms;
+    distribution = distrib;
 
     if (alg == 1) {
         epsilon = eps;
@@ -14,25 +16,36 @@ Bandit::Bandit(int alg, int K_arms, double eps) {
 
     // Initializing the frequency array with zeros.
     armChoice = new double[K]();
+
+    totalRewards = new double[T*N + 1]();
+    optimalChoice = new int[T*N + 1]();
 }
 
 void Bandit::makeExperiment(double arms[]) {
     for (int i=0; i<N; i++) {
+        observedRewards = new double[K]();
+        realMaxIndex = initializeArms(K, arms);
         makeRun(arms);
     }
 
     printStats(arms);
+
+    delete[] observedRewards;
+    delete[] armChoice;
+    delete[] totalRewards;
+    delete[] optimalChoice;
 }
 
 void Bandit::makeRun(double arms[]) {
     for (int i=0; i<T; i++) {
-        totalReward += makeStep(arms);
+        averageReward = (averageReward + makeStep(arms)) / 2;
     }
 
 }
 
 double Bandit::makeStep(double arms[]) {
     int rewardIndex;
+    double reward;
 
     switch (algorithm) {
         case 1:         // Epsilon-Greedy
@@ -46,12 +59,42 @@ double Bandit::makeStep(double arms[]) {
             break;
     }
 
-    if (arms[rewardIndex] > arms[indexMaxReward]) {
-        indexMaxReward = rewardIndex;
+    switch (distribution) {
+        case 1:         // Normal
+            reward = rewardGaussian(arms[rewardIndex]);
+            break;
+        case 2:         // Bernoulli
+            reward = rewardBernoulli(arms[rewardIndex]);
+            break;
     }
 
     armChoice[rewardIndex]++;
-    return arms[rewardIndex];
+
+    if (rewardIndex == realMaxIndex) {
+        optimalChoice[counter] = 1;
+    } else {
+        optimalChoice[counter] = 0;
+    }
+
+    if (counter != 0) {
+        totalRewards[counter] = totalRewards[counter-1] + reward;
+    } else {
+        totalRewards[counter] = reward;
+    }
+
+    counter++;
+    
+    if (observedRewards[rewardIndex] == 0) {
+        observedRewards[rewardIndex] = reward;
+    } else {
+        observedRewards[rewardIndex] = (observedRewards[rewardIndex] + reward) / 2;
+    }
+
+    if (observedRewards[rewardIndex] > observedRewards[indexMaxReward]) {
+        indexMaxReward = rewardIndex;
+    }
+
+    return reward;
 }
 
 // Exporation/Expoilation algorithms
@@ -85,7 +128,7 @@ void Bandit::Pursuit() {
 
 int Bandit::explore() {
     random_device generator;
-    uniform_int_distribution<int> intDist(0, K);
+    uniform_int_distribution<int> intDist(0, K-1);
 
     int choice = intDist(generator);
 
@@ -98,20 +141,14 @@ int Bandit::exploit() {
 
 void Bandit::printStats(double arms[]) { 
     cout << "The highest reward was found at position " 
-         << indexMaxReward << " with a value of " << arms[indexMaxReward] << "\n";
+         << indexMaxReward << " with a value of " << observedRewards[indexMaxReward] << "\n";
 
-    cout << "The total reward of the bandit is " << totalReward << "\n";
+    cout << "The average reward of the bandit is " << averageReward << "\n";
 
-    cout << "The choices were made as follows:\n";
-    for (int i=0; i<K;i++) {
-        cout << "\t" << i;
+    cout << "The choices were made as follows:\n\n";
+
+    cout << "Index" << "\tNum. Choices" << "\t\tObserved" << "\tReal\n";
+    for (int i=0; i<K-1;i++) {
+        cout << " " << i << "\t" << armChoice[i] << "\t\t" << observedRewards[i] << "\t" << arms[i] << "\n";
     }
-
-    cout << "\n";
-
-    for (int i=0; i<K;i++) {
-        cout << "\t" << armChoice[i];
-    } 
-
-    cout << "\n";
 }

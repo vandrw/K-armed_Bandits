@@ -22,5 +22,6 @@ clean:
 	$(RM) -r $(BUILDDIR)/* $(TARGET)/*
 
 run:
+	@clear
 	@echo "Running the file...\n";
 	@$(TARGET)/$(OUTPUT)

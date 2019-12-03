@@ -77,39 +77,6 @@ void initParams(Parameters *param, double *epsilon) {
     }
 }
 
-void printParams(Parameters param, double epsilon) {
-    cout << "\n   The parameters you have chosen are:\n";
-    cout << "Distribution:\t";
-    switch (param.distrib) {
-        case 1:
-            cout << "Gaussian (Normal)\n";
-            break;
-        case 2:
-            cout << "Bernoulli\n";
-            break;
-    }
-    cout << "Algorithm:\t";
-    switch (param.algorithm) {
-        case 1:
-            cout << "Epsilon-Greedy\n";
-            break;
-        case 2:
-            cout << "Optimistic initial values\n";
-            break;
-        case 3:
-             cout << "Reinforcement comparison\n";
-             break;
-        case 4:
-            cout << "Pursuit methods\n";
-            break;
-    }
+void exportStats(Parameters param, double epsilon) {
 
-    cout << "Number of arms:\t" << param.K_arms << "\n";
-    if (param.algorithm == 1) {
-        cout << "Epsilon =\t" << epsilon << "\n";
-    }
-}
-
-void printResults() {
-    // TO-DO
 }
