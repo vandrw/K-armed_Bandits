@@ -1,9 +1,12 @@
 #include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
 #include "user.h"
 
 using namespace std;
 
-void initParams(Parameters *param, double *epsilon) {
+void initParams(Parameters *param) {
 
     for (int i=0; i<=22; i++) {cout << "#";}
 
@@ -59,24 +62,84 @@ void initParams(Parameters *param, double *epsilon) {
     if (param->algorithm == 1) {
         cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01)\n> ";
         if (std::cin.peek() == '\n') {
-            *(epsilon) = 0.01;
+            param->epsilon = 0.01;
             cin.clear();
         } else {
-            cin >> *(epsilon);
+            cin >> param->epsilon;
             cin.clear();
             cin.ignore(256, '\n');
         }
-        while ((*(epsilon) > 1) || (*(epsilon) < 0)) {
+        while ((param->epsilon > 1) || (param->epsilon < 0)) {
             cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01)\n> ";
-            cin >> *(epsilon);
+            cin >> param->epsilon;
+            cin.clear();
+            cin.ignore(256, '\n');
+        }
+    } else if (param->algorithm == 2) {
+         cout << "\nChoose an optimistic value (default = 5)\n> ";
+        if (std::cin.peek() == '\n') {
+            param->optimisticValue = 5;
+            cin.clear();
+        } else {
+            cin >> param->optimisticValue;
             cin.clear();
             cin.ignore(256, '\n');
         }
     } else {
-        *(epsilon) = 0;
+        param->epsilon = 0;
+        param->optimisticValue = 0;
     }
 }
 
-void exportStats(Parameters param, double epsilon) {
+void exportToFile(std::vector<double> allRewards, std::vector<int> optimalChoice, Parameters param) {
+    ofstream fileReward;
+    ofstream fileOptimal;
 
+    string filename;
+
+    filename.append("data/");
+    filename.append(to_string(param.K_arms));
+
+    switch(param.distrib) {
+        case 1:
+            {
+                filename.append("_Gaussian_");
+                break;
+            }
+        case 2:
+            {
+                filename.append("_Bernoulli_");
+                break;
+            }
+    }
+
+    switch (param.algorithm) {
+        case 1:
+            {
+                filename.append("EpsilonGreedy_");
+                filename.append(to_string(param.epsilon));
+                break;
+            }
+        case 2:
+            {
+                filename.append("OptimisticInit_");
+                filename.append(to_string(param.optimisticValue));
+                break;
+            }
+        case 3:
+            {
+                filename.append("ReinfCompar");
+                break;
+            }
+        case 4:
+            {
+                filename.append("Pursuit");
+            }
+    }
+
+    fileReward.open(filename + "_Rewards.csv", std::ofstream::out);
+    fileOptimal.open(filename + "_Optimal.csv", std::ofstream::out);
+
+    fileReward.close();
+    fileOptimal.close();
 }

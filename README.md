@@ -14,9 +14,10 @@ make run
 
 ## TO DO
 - [x] Implement user interaction
-- [ ] Implement Gaussian (normal) and Bernoulli distribution
-- [ ] Implement Exporation/ Exploitation using:
-    - [ ] Epsilon-Greedy
-    - [ ] Optimistic initial values
+- [x] Implement Gaussian (normal) and Bernoulli distribution
+- [x] Implement Exporation/ Exploitation using:
+    - [x] Epsilon-Greedy
+    - [x] Optimistic initial values
     - [ ] Reinforcement comparison
-    - [ ] Boltzmann exploration 
+    - [ ] Boltzmann exploration
+- [ ] Print results to file

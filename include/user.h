@@ -6,15 +6,15 @@
 #define USER_H
 
 struct Parameters {
-    int distrib;      // Distribution choice.
-    int algorithm;    // Algorithm choice.
-    int K_arms;      // Number of arms.
+    int distrib;            // Distribution choice.
+    int algorithm;          // Algorithm choice.
+    int K_arms;             // Number of arms.
+    double epsilon;         // Epsilon value for the Epsilon-Greedy algorithm.
+    double optimisticValue; // Optimistic value for the Optimistic Initial Values algorithm.
 };
 
-void initParams(Parameters *param, double *epsilon);
+void initParams(Parameters *param);
 
-void printParams(Parameters param, double epsilon);
-
-void printResults();
+void exportToFile(std::vector<double> allRewards, std::vector<int> optimalChoice, Parameters param);
 
 #endif /* USER_H */

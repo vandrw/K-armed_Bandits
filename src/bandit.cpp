@@ -1,43 +1,54 @@
 #include <random>
 #include <iostream>
+#include <vector>
 #include "bandit.h"
 #include "distrib.h"
+#include "user.h"
 
 using namespace std;
 
-Bandit::Bandit(int alg, int distrib, int K_arms, double eps) {
-    algorithm = alg;
-    K = K_arms;
-    distribution = distrib;
+Bandit::Bandit(Parameters param) {
+    algorithm = param.algorithm;
+    K = param.K_arms;
+    distribution = param.distrib;
 
-    if (alg == 1) {
-        epsilon = eps;
+    if (algorithm == 1) {
+        epsilon = param.epsilon;
+    } else if (algorithm == 2) {
+        optimisticValue = param.optimisticValue;
     }
 
+    // If the algorithm chosen is not Optimistic Initial Values,
+    // the optimisticValue variable will be set to 0, thus
+    // initializing the observed rewards realistically.
+    observedRewards.resize(K, optimisticValue);
+
     // Initializing the frequency array with zeros.
-    armChoice = new double[K]();
+    armChoice.resize(K, 0.0);
+    allRewards.resize(T*N, 0.0);
+    optimalChoice.resize(T*N, 0);
 }
 
-void Bandit::makeExperiment(double arms[]) {
-    double realMaxReward;
-
+void Bandit::makeExperiment(std::vector<double> &arms) {
     for (int i=0; i<N; i++) {
-        observedRewards = new double[K]();
-        realMaxReward = initializeArms(K, arms);
+        
+        std::fill(observedRewards.begin(), observedRewards.end(), optimisticValue);
+
+        realMaxIndex = initializeArms(K, distribution, arms);
         makeRun(arms);
     }
 
     printStats(arms);
 }
 
-void Bandit::makeRun(double arms[]) {
+void Bandit::makeRun(std::vector<double> &arms) {
     for (int i=0; i<T; i++) {
         averageReward = (averageReward + makeStep(arms)) / 2;
     }
 
 }
 
-double Bandit::makeStep(double arms[]) {
+double Bandit::makeStep(std::vector<double> &arms) {
     int rewardIndex;
     double reward;
 
@@ -46,6 +57,7 @@ double Bandit::makeStep(double arms[]) {
             rewardIndex = EpsilonGreedy();
             break;
         case 2:         // Optimistic initial values
+            rewardIndex = OptimisticInit();
             break;
         case 3:         // Reinforcement comparison
              break;
@@ -55,14 +67,32 @@ double Bandit::makeStep(double arms[]) {
 
     switch (distribution) {
         case 1:         // Normal
+            {
             reward = rewardGaussian(arms[rewardIndex]);
             break;
+            }
         case 2:         // Bernoulli
+            {
             reward = rewardBernoulli(arms[rewardIndex]);
             break;
+            }
+        default:
+            {
+            break;
+            }
     }
 
     armChoice[rewardIndex]++;
+
+    if (rewardIndex == realMaxIndex) {
+        optimalChoice[counter] = 1;
+    } else {
+        optimalChoice[counter] = 0;
+    }
+
+    allRewards[counter] = reward;
+
+    counter++;
     
     if (observedRewards[rewardIndex] == 0) {
         observedRewards[rewardIndex] = reward;
@@ -96,11 +126,11 @@ int Bandit::EpsilonGreedy() {
 
     return rewardIndex;
 }
-void Bandit::OptimisticInit() {
-
+int Bandit::OptimisticInit() {
+    return exploit();
 }
 void Bandit::ReinforcementCompar() {
-
+    
 }
 void Bandit::Pursuit() {
 
@@ -116,18 +146,25 @@ int Bandit::explore() {
 }
 
 int Bandit::exploit() {
+    int maxReward;
+
+    for (int i=0; i<K; i++) {
+        if (observedRewards[i] > observedRewards[indexMaxReward]) {
+            maxReward = observedRewards[i];
+            indexMaxReward = i;
+        }
+    }
+
     return indexMaxReward;
 }
 
-void Bandit::printStats(double arms[]) { 
-    cout << "The highest reward was found at position " 
-         << indexMaxReward << " with a value of " << observedRewards[indexMaxReward] << "\n";
+void Bandit::printStats(std::vector<double> &arms) {
 
     cout << "The average reward of the bandit is " << averageReward << "\n";
 
     cout << "The choices were made as follows:\n\n";
 
-    cout << "Index" << "\tNum. Choices" << "\t\tObserved" << "\tReal\n";
+    cout << "Index" << "\tNum. Choices" << "\tObserved" << "\tReal\n";
     for (int i=0; i<K;i++) {
         cout << " " << i << "\t" << armChoice[i] << "\t\t" << observedRewards[i] << "\t" << arms[i] << "\n";
     }
