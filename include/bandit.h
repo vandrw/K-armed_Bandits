@@ -17,6 +17,7 @@ class Bandit {
     int     distribution;
     double  epsilon=0;
     double  optimisticValue=0;
+    double  exploreDegree=0;
 
     // Observed Parameters
     int    indexMaxReward = 0;              // Index of the action with the highest reward.
@@ -31,6 +32,8 @@ class Bandit {
 
     Bandit(Parameters param);
 
+    void reinitBandit();
+
     void makeExperiment(std::vector<double> &arms);
     void makeRun(std::vector<double> &arms);
     double makeStep(std::vector<double> &arms);
@@ -40,7 +43,7 @@ class Bandit {
     int EpsilonGreedy();
     int OptimisticInit();
     void ReinforcementCompar();
-    void Pursuit();
+    int UCB();
 
     int explore();
     int exploit();

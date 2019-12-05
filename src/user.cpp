@@ -29,7 +29,7 @@ void initParams(Parameters *param) {
         cin.ignore(256, '\n');
     }
 
-    cout << "\nChoose the number of arms (K) for the problem (default = 5)";
+    cout << "\nChoose the number of arms (K) for the problem (default = 5).";
     cout << "\n> ";
     if (std::cin.peek() == '\n') {
         param->K_arms = 5;
@@ -45,7 +45,7 @@ void initParams(Parameters *param) {
     cout << "1. Epsilon-Greedy\n";
     cout << "2. Optimistic initial values\n";
     cout << "3. Reinforcement comparison\n";
-    cout << "4. Pursuit methods\n> ";
+    cout << "4. UCB\n> ";
     if (std::cin.peek() == '\n') {
         param->algorithm = 1;
         cin.clear();
@@ -60,7 +60,7 @@ void initParams(Parameters *param) {
     }
 
     if (param->algorithm == 1) {
-        cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01)\n> ";
+        cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01).\n> ";
         if (std::cin.peek() == '\n') {
             param->epsilon = 0.01;
             cin.clear();
@@ -70,13 +70,13 @@ void initParams(Parameters *param) {
             cin.ignore(256, '\n');
         }
         while ((param->epsilon > 1) || (param->epsilon < 0)) {
-            cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01)\n> ";
+            cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01).\n> ";
             cin >> param->epsilon;
             cin.clear();
             cin.ignore(256, '\n');
         }
     } else if (param->algorithm == 2) {
-         cout << "\nChoose an optimistic value (default = 5)\n> ";
+        cout << "\nChoose an optimistic value (default = 5).\n> ";
         if (std::cin.peek() == '\n') {
             param->optimisticValue = 5;
             cin.clear();
@@ -85,9 +85,24 @@ void initParams(Parameters *param) {
             cin.clear();
             cin.ignore(256, '\n');
         }
+    } else if (param->algorithm == 3) {
+        cout << "\nChoose the degree of exploration c > 0 (default 1).\n> ";
+        if (std::cin.peek() == '\n') {
+            param->exploreDegree = 2;
+            cin.clear();
+        } else {
+            cin >> param->exploreDegree;
+            cin.clear();
+            cin.ignore(256, '\n');
+        }
+
+        if (param->exploreDegree <= 0) {
+            param->exploreDegree = 1;
+        }
     } else {
         param->epsilon = 0;
         param->optimisticValue = 0;
+        param->exploreDegree = 0;
     }
 }
 
@@ -95,7 +110,12 @@ void exportToFile(std::vector<double> allRewards, std::vector<int> optimalChoice
     ofstream fileReward;
     ofstream fileOptimal;
 
+    int T = 10000;                    // Number of action selections.
+    int N = 1000;                     // Number of runs.
+
     string filename;
+
+    cout << "Writing data to file...\n";
 
     filename.append("data/");
     filename.append(to_string(param.K_arms));
@@ -133,12 +153,25 @@ void exportToFile(std::vector<double> allRewards, std::vector<int> optimalChoice
             }
         case 4:
             {
-                filename.append("Pursuit");
+                filename.append("UCB");
             }
     }
 
     fileReward.open(filename + "_Rewards.csv", std::ofstream::out);
     fileOptimal.open(filename + "_Optimal.csv", std::ofstream::out);
+
+    for (int i=0; i<N; i++) {
+        fileReward << allRewards[i*N];
+        fileOptimal << optimalChoice[i*N];
+        for (int j=1; j<T; j++) {
+            fileReward << "," << allRewards[i*N + j];
+            fileOptimal << "," << optimalChoice[i*N + j];
+        }
+        fileReward << "\n";
+        fileOptimal << "\n";
+    }
+
+    cout << "Done!\n";
 
     fileReward.close();
     fileOptimal.close();

@@ -1,6 +1,7 @@
 #include <random>
 #include <iostream>
 #include <vector>
+#include <cmath>
 #include "bandit.h"
 #include "distrib.h"
 #include "user.h"
@@ -12,27 +13,41 @@ Bandit::Bandit(Parameters param) {
     K = param.K_arms;
     distribution = param.distrib;
 
-    if (algorithm == 1) {
-        epsilon = param.epsilon;
-    } else if (algorithm == 2) {
-        optimisticValue = param.optimisticValue;
+    switch (algorithm) {
+        case 1:
+            epsilon = param.epsilon;
+            break;
+        case 2:
+            optimisticValue = param.optimisticValue;
+            break;
+        case 3:
+            exploreDegree = param.exploreDegree;
+            break;
+        default:
+            break;
     }
 
     // If the algorithm chosen is not Optimistic Initial Values,
     // the optimisticValue variable will be set to 0, thus
     // initializing the observed rewards realistically.
     observedRewards.resize(K, optimisticValue);
-
     // Initializing the frequency array with zeros.
-    armChoice.resize(K, 0.0);
+    armChoice.resize(K, 0);
+
     allRewards.resize(T*N, 0.0);
     optimalChoice.resize(T*N, 0);
+}
+
+void Bandit::reinitBandit() {
+    std::fill(observedRewards.begin(), observedRewards.end(), optimisticValue);
+    std::fill(armChoice.begin(), armChoice.end(), 0);
+    counter = 0;
 }
 
 void Bandit::makeExperiment(std::vector<double> &arms) {
     for (int i=0; i<N; i++) {
         
-        std::fill(observedRewards.begin(), observedRewards.end(), optimisticValue);
+        reinitBandit();
 
         realMaxIndex = initializeArms(K, distribution, arms);
         makeRun(arms);
@@ -61,7 +76,10 @@ double Bandit::makeStep(std::vector<double> &arms) {
             break;
         case 3:         // Reinforcement comparison
              break;
-        case 4:         // Pursuit methods
+        case 4:         // UCB
+            rewardIndex = UCB();
+            break;
+        default:
             break;
     }
 
@@ -132,8 +150,24 @@ int Bandit::OptimisticInit() {
 void Bandit::ReinforcementCompar() {
     
 }
-void Bandit::Pursuit() {
+int Bandit::UCB() {
+    int maxReward=-10;
+    int rewardUCB;
 
+    for (int i=0; i<K; i++) {
+        if (armChoice[i] == 0) {
+            return i;
+        }
+        rewardUCB = observedRewards[i] 
+                  + exploreDegree 
+                  * sqrt(log(counter) / armChoice[i]); 
+        if (rewardUCB > maxReward) {
+            maxReward = rewardUCB;
+            indexMaxReward = i;
+        }
+    }
+
+    return indexMaxReward;
 }
 
 int Bandit::explore() {
@@ -146,10 +180,10 @@ int Bandit::explore() {
 }
 
 int Bandit::exploit() {
-    int maxReward;
+    int maxReward=-10;
 
     for (int i=0; i<K; i++) {
-        if (observedRewards[i] > observedRewards[indexMaxReward]) {
+        if (observedRewards[i] > maxReward) {
             maxReward = observedRewards[i];
             indexMaxReward = i;
         }

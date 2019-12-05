@@ -11,6 +11,7 @@ struct Parameters {
     int K_arms;             // Number of arms.
     double epsilon;         // Epsilon value for the Epsilon-Greedy algorithm.
     double optimisticValue; // Optimistic value for the Optimistic Initial Values algorithm.
+    double exploreDegree;   // Number > 0, which controls the degree of exploration in UCB.
 };
 
 void initParams(Parameters *param);
