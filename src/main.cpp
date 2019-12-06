@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
     } else {
         Params.distrib = arg1;
         Params.algorithm = arg2;
-        Params.K_arms = 10;
+        Params.K_arms = 30;
         Params.epsilon = 0.01;
         Params.optimisticValue = 10;
         Params.exploreDegree = 2;

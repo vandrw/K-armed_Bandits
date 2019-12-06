@@ -10,6 +10,7 @@ If you wish to create all the data at once and show a graph for each problem, ru
 ```
 make all
 ```
+This might take between 5 and 10 minutes, depending on hardware.
 
 ## Project Structure
 * __bin__: The output executables will appear here.

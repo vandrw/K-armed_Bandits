@@ -42,7 +42,7 @@ int initializeArms(int K, int distrib, std::vector<double> &arms) {
             }
             break;
         }
-        case 2: {
+        case 2: {      // Bernoulli
             for (int i=0; i<K; i++) {
                 arms[i] = real(generator);
                 if (arms[i] > maxReward) {

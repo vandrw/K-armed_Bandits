@@ -19,7 +19,7 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 
 clean:
 	@echo " Cleaning..."; 
-	@$(RM) -r $(BUILDDIR)/* $(TARGET)/* data/*;
+	@$(RM) -r $(BUILDDIR)/* $(TARGET)/* data/* docs/*.png;
 
 run:
 	@clear
