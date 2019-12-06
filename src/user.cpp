@@ -70,7 +70,7 @@ void initParams(Parameters *param) {
             cin.ignore(256, '\n');
         }
         while ((param->epsilon > 1) || (param->epsilon < 0)) {
-            cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01).\n> ";
+            cout << "\nChoose an epsilon value between 0 and 1 (default = 0.01).\n> ";
             cin >> param->epsilon;
             cin.clear();
             cin.ignore(256, '\n');
