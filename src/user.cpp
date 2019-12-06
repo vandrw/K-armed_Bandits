@@ -60,7 +60,7 @@ void initParams(Parameters *param) {
     }
 
     if (param->algorithm == 1) {
-        cout << "\nChoose an epsillon value between 0 and 1 (default = 0.01).\n> ";
+        cout << "\nChoose an epsilon value between 0 and 1 (default = 0.01).\n> ";
         if (std::cin.peek() == '\n') {
             param->epsilon = 0.01;
             cin.clear();
