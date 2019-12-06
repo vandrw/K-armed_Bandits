@@ -27,7 +27,12 @@ run:
 	@$(TARGET)/$(OUTPUT) $(ARGS)
 
 graph:
+	@echo "Generating the plots...";
 	@python docs/graph.py
+
+mean:
+	@echo "Calculating means...";
+	@python docs/mean.py
 
 all:
 	@$(MAKE) -s clean;

@@ -30,10 +30,10 @@ int main(int argc, char **argv) {
     } else {
         Params.distrib = arg1;
         Params.algorithm = arg2;
-        Params.K_arms = 30;
+        Params.K_arms = 20;
         Params.epsilon = 0.01;
         Params.optimisticValue = 10;
-        Params.exploreDegree = 2;
+        Params.exploreDegree = 1;
         Params.alpha= 1/Params.K_arms;
         Params.beta = 2;
     }

@@ -29,7 +29,7 @@ int initializeArms(int K, int distrib, std::vector<double> &arms) {
     int maxRewardId;
     
     normal_distribution<double> normal(0,1);
-    uniform_real_distribution<double> real(0.0, 1.0);
+    uniform_real_distribution<double> real(0.0, 1.001);
 
     switch (distrib) {
         case 1: {       // Normal
