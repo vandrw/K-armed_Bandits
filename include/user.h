@@ -11,6 +11,8 @@ struct Parameters {
     int K_arms;             // Number of arms.
     double epsilon;         // Epsilon value for the Epsilon-Greedy algorithm.
     double optimisticValue; // Optimistic value for the Optimistic Initial Values algorithm.
+    double alpha;           // Value that determines how much an action is weakened in Reinfocement Comparison.
+    double beta;            // A positive step-size parameter in the Reinforcement Comparison algorithm.
     double exploreDegree;   // Number > 0, which controls the degree of exploration in UCB.
 };
 

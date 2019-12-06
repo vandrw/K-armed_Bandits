@@ -21,6 +21,11 @@ Bandit::Bandit(Parameters param) {
             optimisticValue = param.optimisticValue;
             break;
         case 3:
+            armPreference.resize(K, 0.0);
+            alpha = param.alpha;
+            betav = param.beta;
+            break;
+        case 4:
             exploreDegree = param.exploreDegree;
             break;
         default:
@@ -39,9 +44,15 @@ Bandit::Bandit(Parameters param) {
 }
 
 void Bandit::reinitBandit() {
+    counter = 0;
+
     std::fill(observedRewards.begin(), observedRewards.end(), optimisticValue);
     std::fill(armChoice.begin(), armChoice.end(), 0);
-    counter = 0;
+
+    if (algorithm == 3) {
+        std::fill(armPreference.begin(), armPreference.end(), 0.0);
+        referenceReward = 1.5;
+    }
 }
 
 void Bandit::makeExperiment(std::vector<double> &arms) {
@@ -58,7 +69,7 @@ void Bandit::makeExperiment(std::vector<double> &arms) {
 
 void Bandit::makeRun(std::vector<double> &arms) {
     for (int i=0; i<T; i++) {
-        averageReward = (averageReward + makeStep(arms)) / 2;
+        makeStep(arms);
     }
 
 }
@@ -75,6 +86,7 @@ double Bandit::makeStep(std::vector<double> &arms) {
             rewardIndex = OptimisticInit();
             break;
         case 3:         // Reinforcement comparison
+            rewardIndex = ReinforcementCompar();
              break;
         case 4:         // UCB
             rewardIndex = UCB();
@@ -103,23 +115,30 @@ double Bandit::makeStep(std::vector<double> &arms) {
     armChoice[rewardIndex]++;
 
     if (rewardIndex == realMaxIndex) {
-        optimalChoice[counter] = 1;
+        optimalChoice[simCounter] = 1;
     } else {
-        optimalChoice[counter] = 0;
+        optimalChoice[simCounter] = 0;
     }
 
-    allRewards[counter] = reward;
+    allRewards[simCounter] = reward;
 
+    simCounter++;
     counter++;
-    
+
     if (observedRewards[rewardIndex] == 0) {
         observedRewards[rewardIndex] = reward;
     } else {
         observedRewards[rewardIndex] = (observedRewards[rewardIndex] + reward) / 2;
     }
 
-    if (observedRewards[rewardIndex] > observedRewards[indexMaxReward]) {
-        indexMaxReward = rewardIndex;
+    if ((algorithm != 4) && (algorithm != 3)) {
+        if (observedRewards[rewardIndex] > observedRewards[indexMaxReward]) {
+            indexMaxReward = rewardIndex;
+        }
+    }
+    if (algorithm == 3) {
+        armPreference[indexMaxReward] += betav * (reward - referenceReward);
+        referenceReward = referenceReward +  alpha * (reward - referenceReward);
     }
 
     return reward;
@@ -144,12 +163,42 @@ int Bandit::EpsilonGreedy() {
 
     return rewardIndex;
 }
+
 int Bandit::OptimisticInit() {
     return exploit();
 }
-void Bandit::ReinforcementCompar() {
-    
+
+int Bandit::ReinforcementCompar() {
+    random_device generator;
+    uniform_real_distribution<double> realDist(0.0, 1.0);
+
+    double sumExp=0.0;
+    double prob, maxProb=-10.0;
+
+    int rewardIndex;
+    double check = realDist(generator);
+
+    for (int i=0; i<K; i++) {
+        sumExp += exp(armPreference[i]);
+    }
+
+    for (int i=0; i<K; i++) {
+        prob = exp(armPreference[i])/ sumExp;
+        if ( prob > maxProb ) {
+            maxProb = prob;
+            indexMaxReward = i;
+        }
+    }
+
+    if (check <= armPreference[indexMaxReward]) {
+        rewardIndex = explore();
+    } else {
+        rewardIndex = indexMaxReward;
+    }
+
+    return rewardIndex;
 }
+
 int Bandit::UCB() {
     int maxReward=-10;
     int rewardUCB;
@@ -193,8 +242,6 @@ int Bandit::exploit() {
 }
 
 void Bandit::printStats(std::vector<double> &arms) {
-
-    cout << "The average reward of the bandit is " << averageReward << "\n";
 
     cout << "The choices were made as follows:\n\n";
 

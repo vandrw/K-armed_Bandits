@@ -19,9 +19,25 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
 
 clean:
 	@echo " Cleaning..."; 
-	$(RM) -r $(BUILDDIR)/* $(TARGET)/*
+	@$(RM) -r $(BUILDDIR)/* $(TARGET)/* data/*;
 
 run:
 	@clear
 	@echo "Running the file...\n";
-	@$(TARGET)/$(OUTPUT)
+	@$(TARGET)/$(OUTPUT) $(ARGS)
+
+graph:
+	@python docs/graph.py
+
+all:
+	@$(MAKE) -s clean;
+	@$(MAKE) -s;
+	@$(MAKE) -s run ARGS="1 1";
+	@$(MAKE) -s run ARGS="1 2";
+	@$(MAKE) -s run ARGS="1 3";
+	@$(MAKE) -s run ARGS="1 4";
+	@$(MAKE) -s run ARGS="2 1";
+	@$(MAKE) -s run ARGS="2 2";
+	@$(MAKE) -s run ARGS="2 3";
+	@$(MAKE) -s run ARGS="2 4";
+	@$(MAKE) -s graph;

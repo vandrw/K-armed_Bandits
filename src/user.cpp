@@ -45,7 +45,7 @@ void initParams(Parameters *param) {
     cout << "1. Epsilon-Greedy\n";
     cout << "2. Optimistic initial values\n";
     cout << "3. Reinforcement comparison\n";
-    cout << "4. UCB\n> ";
+    cout << "4. Upper-Confidence-Bound\n> ";
     if (std::cin.peek() == '\n') {
         param->algorithm = 1;
         cin.clear();
@@ -85,8 +85,36 @@ void initParams(Parameters *param) {
             cin.clear();
             cin.ignore(256, '\n');
         }
-    } else if (param->algorithm == 3) {
-        cout << "\nChoose the degree of exploration c > 0 (default 1).\n> ";
+    } else if (param->algorithm == 3){
+        cout << "\nChoose an alpha value in the interval (0,1] (default 1/Number of arms).\n> ";
+        if (std::cin.peek() == '\n') {
+            param->alpha = 1;
+            cin.clear();
+        } else {
+            cin >> param->alpha;
+            cin.clear();
+            cin.ignore(256, '\n');
+        }
+
+        if ((param->alpha <= 0) || (param->alpha > 1)) {
+            param->alpha = 1;
+        }
+
+        cout << "\nChoose the value beta > 0 (default 1).\n> ";
+        if (std::cin.peek() == '\n') {
+            param->beta = 1;
+            cin.clear();
+        } else {
+            cin >> param->beta;
+            cin.clear();
+            cin.ignore(256, '\n');
+        }
+
+        if (param->beta <= 0) {
+            param->beta = 1;
+        }
+    } else if (param->algorithm == 4) {
+        cout << "\nChoose the degree of exploration c > 0 (default 2).\n> ";
         if (std::cin.peek() == '\n') {
             param->exploreDegree = 2;
             cin.clear();
@@ -100,6 +128,7 @@ void initParams(Parameters *param) {
             param->exploreDegree = 1;
         }
     } else {
+        param->alpha = 1;
         param->epsilon = 0;
         param->optimisticValue = 0;
         param->exploreDegree = 0;
@@ -110,8 +139,9 @@ void exportToFile(std::vector<double> allRewards, std::vector<int> optimalChoice
     ofstream fileReward;
     ofstream fileOptimal;
 
-    int T = 10000;                    // Number of action selections.
-    int N = 1000;                     // Number of runs.
+    int       T = 10000;                    // Number of action selections.
+    int       N = 1000;                     // Number of runs.
+    int counter = 0;                        // Variable that keeps track of the position in the array.
 
     string filename;
 
@@ -149,30 +179,42 @@ void exportToFile(std::vector<double> allRewards, std::vector<int> optimalChoice
         case 3:
             {
                 filename.append("ReinfCompar");
+                filename.append("_a");
+                filename.append(to_string(param.alpha));
+                filename.append("_b");
+                filename.append(to_string(param.beta));
                 break;
             }
         case 4:
             {
-                filename.append("UCB");
+                filename.append("UCB_");
+                filename.append(to_string(param.exploreDegree));
             }
     }
 
-    fileReward.open(filename + "_Rewards.csv", std::ofstream::out);
-    fileOptimal.open(filename + "_Optimal.csv", std::ofstream::out);
+    fileReward.open(filename + "_Rewards.csv", std::ofstream::out | ios::trunc);
+    fileOptimal.open(filename + "_Optimal.csv", std::ofstream::out | ios::trunc);
 
-    for (int i=0; i<N; i++) {
-        fileReward << allRewards[i*N];
-        fileOptimal << optimalChoice[i*N];
-        for (int j=1; j<T; j++) {
-            fileReward << "," << allRewards[i*N + j];
-            fileOptimal << "," << optimalChoice[i*N + j];
+    if (fileReward.is_open() && fileOptimal.is_open()) {
+
+        for (int i=0; i<N; i++) {
+            fileReward << allRewards[counter];
+            fileOptimal << optimalChoice[counter++];
+            for (int j=1; j<T; j++) {
+                fileReward << "," << allRewards[counter];
+                fileOptimal << "," << optimalChoice[counter++];
+            }
+            fileReward << "\n";
+            fileOptimal << "\n";
         }
-        fileReward << "\n";
-        fileOptimal << "\n";
+        
+        cout << "Done! The data can be found in the following files:\n";
+        cout << filename << "_Rewards.csv\n";
+        cout << filename << "_Optimal.csv\n";
+
+        fileReward.close();
+        fileOptimal.close();
+    } else {
+        cout << "Could not open the files.\n";
     }
-
-    cout << "Done!\n";
-
-    fileReward.close();
-    fileOptimal.close();
 }
